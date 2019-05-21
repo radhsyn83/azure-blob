@@ -44,9 +44,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="jsonOutput">Response: </label>
-                    <textarea class="form-control" id="responseTextArea" rows="3" style="height: 300px" readonly></textarea>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="jsonOutput">Response: </label>
+                            <textarea class="form-control" id="responseTextArea" rows="3" style="height: 300px" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <center>
+                            <img src="#" id="imageAnalyze" class="mt-4" style="height: 150px; object-fit: contain;" />
+                            <br>
+                            <br>
+                            <span id="descAnalyze"></span>
+                        </center>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -140,6 +152,8 @@
         $.ajax({
             url: uriBase + "?" + $.param(params),
             beforeSend: function(xhrObj){
+                $("#descAnalyze").html("Loading...");
+                $("#imageAnalyze").attr("src",url);
                 $("#analyze-modal").modal("show");
                 $("#responseTextArea").val("loading...");
                 xhrObj.setRequestHeader("Content-Type","application/json");
@@ -149,7 +163,11 @@
             type: "POST",
             data: '{"url": ' + '"' + url + '"}',
             success: function (data) {
-                $("#responseTextArea").val(JSON.stringify(data, null, 2));
+                var json = JSON.stringify(data, null, 2);
+                $("#responseTextArea").val(json);
+                console.log(data);
+                $("#descAnalyze").html(data.description.captions[0].text);
+
             }
         })
             .fail(function(jqXHR, textStatus, errorThrown) {
